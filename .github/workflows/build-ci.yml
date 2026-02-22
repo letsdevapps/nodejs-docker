@@ -44,7 +44,6 @@ jobs:
       - name: Run Docker container
         run: |
           docker run -d -p 8080:8080 --name nodejs-docker nodejs-docker
-        # Espera o contêiner rodar um pouco
           sleep 5
 
       # 8. Testar o Docker container
