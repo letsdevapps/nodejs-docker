@@ -1,0 +1,53 @@
+name: Build CI Nodejs Docker
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checar o repositório
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      # 2. Configurar Node.js (ou outro ambiente de sua escolha)
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14' # Altere para a versão do Node que você usa
+
+      # 3. Instalar dependências
+      - name: Install dependencies
+        run: npm install
+
+      # 4. Rodar testes
+      - name: Run tests
+        run: npm test
+        
+      # 5. Habilitar Docker (isso garante que o Docker esteja funcionando no runner)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # 6. Build da imagem Docker
+      - name: Build Docker image
+        run: |
+          docker build -t nodejs-docker .
+
+      # 7. Rodar o contêiner Docker
+      - name: Run Docker container
+        run: |
+          docker run -d -p 8080:8080 --name nodejs-docker nodejs-docker
+        # Espera o contêiner rodar um pouco
+          sleep 5
+
+      # 8. Testar o Docker container
+      - name: Test Docker container
+        run: |
+          curl http://localhost:8080
